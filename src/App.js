@@ -1,16 +1,44 @@
-import React from 'react';
-import Alert from './alert/Alert';
-import Main from './Main';
-import { AlertProvider } from './alert/AlertContext';
+import React, { useEffect, useState } from 'react';
+
+function useLogger(value) {
+  useEffect(() => {
+    console.log('Value change', value);
+  }, [value]);
+}
+
+function useInput(initialValue) {
+  const [value, setValue] = useState(initialValue);
+
+  const onChange = (event) => {
+    setValue(event.target.value);
+  };
+
+  const clear = () => setValue('');
+
+  return {
+    bind: {
+      value,
+      onChange,
+    },
+    value,
+    clear,
+  };
+}
 
 function App() {
+  const input = useInput('');
+
+  useLogger(input.value);
+
   return (
-    <AlertProvider value={alert}>
-      <div className={'container pt-3'}>
-        <Alert />
-        <Main />
-      </div>
-    </AlertProvider>
+    <div className={'container pt-3'}>
+      <h1>{input.value}</h1>
+      <input type="text" {...input.bind} />
+
+      <button className="btn btn-warning" onClick={() => input.clear()}>
+        Clear
+      </button>
+    </div>
   );
 }
 
