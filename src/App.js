@@ -1,49 +1,50 @@
-import React, { useState } from 'react';
-
-function computeInitialCouter() {
-  console.log('Some calculatios...');
-  return Math.trunc(Math.random() * 20);
-}
+import React, { useState, useEffect } from 'react';
 
 function App() {
-  // const [counter, setCounter] = useState(computeInitialCouter());
-  const [counter, setCounter] = useState(() => computeInitialCouter());
+  const [type, setType] = useState('users');
+  const [data, setData] = useState([]);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
 
-  const [state, setState] = useState({ title: 'Counter', date: Date.now() });
+  // useEffect(() => {
+  //   console.log('render');
+  // });
 
-  const increment = () => {
-    // setCounter(counter + 1); not working
-    // setCounter(counter + 1);
-    setCounter((prev) => prev + 1); //good practice (for using same state, or dependences)
-  };
+  useEffect(() => {
+    fetch(`https://jsonplaceholder.typicode.com/${type}/`)
+      .then((response) => response.json())
+      .then((json) => setData(json));
 
-  const decrement = () => {
-    setCounter(counter - 1);
-  };
+    return () => {
+      window.removeEventListener('mousemove', mouseMoveHandler);
+    };
+  }, [type]);
 
-  function updateTitle() {
-    setState((prev) => {
-      return {
-        ...prev,
-        title: 'newName',
-      };
+  const mouseMoveHandler = (event) => {
+    setPos({
+      x: event.clientX,
+      y: event.clientY,
     });
-  }
+  };
+
+  useEffect(() => {
+    console.log('Comp did mount');
+    window.addEventListener('mousemove', mouseMoveHandler);
+
+    return () => {
+      window.removeEventListener('mousemove', mouseMoveHandler);
+    };
+  }, []);
 
   return (
     <div>
-      <h1>Counter : {counter}</h1>
-      <button className="btn btn-success" onClick={increment}>
-        Add
-      </button>
-      <button className="btn btn-danger" onClick={decrement}>
-        Remove
-      </button>
-      <button className="btn btn-default" onClick={() => updateTitle()}>
-        Change
-      </button>
+      <h1>Source: {type}</h1>
 
-      <pre>{JSON.stringify(state, null, 2)}</pre>
+      <button onClick={() => setType('users')}>Users</button>
+      <button onClick={() => setType('todos')}>Todos</button>
+      <button onClick={() => setType('posts')}>Posts</button>
+
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+      <pre>{JSON.stringify(pos, null, 2)}</pre>
     </div>
   );
 }
