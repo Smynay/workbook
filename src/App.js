@@ -20,6 +20,12 @@ function App() {
           timeout={{ enter: 1000, exit: 500 }}
           mountOnEnter
           unmountOnExit
+          onEnter={() => console.log('Enter')}
+          onExit={() => console.log('Exit')}
+          onEntered={() => console.log('Entered')}
+          onExited={() => console.log('Exited')}
+          onEntering={() => console.log('Entering')}
+          onExiting={() => console.log('Exiting')}
         >
           {(state) => <div className={`square blue ${state}`}>{state}</div>}
         </Transition>
